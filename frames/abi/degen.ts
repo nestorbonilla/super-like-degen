@@ -1155,4 +1155,4 @@ export const degenAbi = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-] as const
+] as const;
