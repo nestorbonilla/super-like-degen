@@ -12,7 +12,8 @@ import { createClient } from "@vercel/kv";
 
 config();
 
-const ADD_URL = "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsend-ether";
+const ADD_URL =
+  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsuperlike";
 
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
@@ -35,41 +36,42 @@ export async function superlike(fid: number) {
   // Attestation creation with EAS
 }
 // Cast action handler
-app.hono.post("/superlike", async (c) => {
-  console.log(c);
-  const body = await c.req.json();
+// app.hono.post("/superlike", async (c) => {
+//   console.log(c);
+//   const body = await c.req.json();
 
-  const { isValid, message } = await validateFramesMessage(body);
-  const interactorFid = message?.data?.fid;
-  const castFid = message?.data.frameActionBody.castId?.fid as number;
-  if (isValid) {
-    if (interactorFid === castFid) {
-      return c.json({ message: "Nice try." }, 400);
-    }
+//   const { isValid, message } = await validateFramesMessage(body);
+//   const interactorFid = message?.data?.fid;
+//   const castFid = message?.data.frameActionBody.castId?.fid as number;
+//   if (isValid) {
+//     if (interactorFid === castFid) {
+//       return c.json({ message: "Nice try." }, 400);
+//     }
 
-    await superlike(castFid);
+//     await superlike(castFid);
 
-    const { data, error } = await getFarcasterUserDetails({
-      fid: castFid,
-    });
+//     const { data, error } = await getFarcasterUserDetails({
+//       fid: castFid,
+//     });
 
-    if (error) {
-      return c.json({ message: "Error. Try Again." }, 500);
-    }
+//     if (error) {
+//       return c.json({ message: "Error. Try Again." }, 500);
+//     }
 
-    let message = `Superlike to ${data?.profileName}!`;
-    if (message.length > 30) {
-      message = "Superlike!";
-    }
+//     let message = `Superlike to ${data?.profileName}!`;
+//     if (message.length > 30) {
+//       message = "Superlike!";
+//     }
 
-    return c.json({ message });
-  } else {
-    return c.json({ message: "Unauthorized" }, 401);
-  }
-});
+//     return c.json({ message });
+//   } else {
+//     return c.json({ message: "Unauthorized" }, 401);
+//   }
+// });
 
-app.transaction('/send-ether', (c) => {
+app.transaction('/superlike', (c) => {
   // Send transaction response.
+  console.log("starting superlike", c);
   return c.send({
     chainId: 'eip155:10',
     to: '0xe8f5533ba4C562b2162e8CF9B769A69cd28e811D',
