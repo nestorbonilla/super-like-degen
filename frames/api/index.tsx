@@ -43,7 +43,7 @@ app.frame('/', (c) => {
       </div>
     ),
     intents: [
-      <Button.AddCastAction action="/sl-action">
+      <Button.AddCastAction action="/superlike">
         Add
       </Button.AddCastAction>,
     ]
@@ -51,14 +51,14 @@ app.frame('/', (c) => {
 })
 
 app.castAction(
-  '/sl-action',
+  '/superlike',
   (c) => {
     console.log(
       `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
       }`,
     )
 
-    return c.frame({ path: '/sl-execute-frame' })
+    return c.frame({ path: '/sl-allowance-frame' })
   },
   { name: "SuperLike", icon: "flame" }
 )
