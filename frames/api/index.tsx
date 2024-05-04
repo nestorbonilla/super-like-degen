@@ -65,7 +65,8 @@ app.castAction(
 
 app.frame('/sl-allowance-frame', (c) => {
   let { frameData, verified } = c;
-  let { inputText = "" } = frameData || {};
+  console.log("frameData from allowance: ", frameData);
+  // let { inputText = "" } = frameData || {};
   return c.res({
     image: (
       <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
