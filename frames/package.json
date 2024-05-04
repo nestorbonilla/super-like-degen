@@ -1,0 +1,22 @@
+{
+  "name": "super-like-degen",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npx @airstack/frog vercel-build",
+    "dev": "npx @airstack/frog dev",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
+  },
+  "dependencies": {
+    "@airstack/frog": "^0.0.12",
+    "@vercel/kv": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "hono": "^4.3.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.9.0",
+    "typescript": "^5.4.5",
+    "vercel": "^34.1.8"
+  }
+}
