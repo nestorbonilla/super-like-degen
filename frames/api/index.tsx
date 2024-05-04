@@ -2,6 +2,7 @@ import {
   Frog,
   getFarcasterUserDetails,
   validateFramesMessage,
+  parseEther
 } from "@airstack/frog";
 import { devtools } from "@airstack/frog/dev";
 import { serveStatic } from "@airstack/frog/serve-static";
@@ -11,8 +12,7 @@ import { createClient } from "@vercel/kv";
 
 config();
 
-const ADD_URL =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=sun&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsuperlike";
+const ADD_URL = "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsend-ether";
 
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
@@ -67,6 +67,15 @@ app.hono.post("/superlike", async (c) => {
     return c.json({ message: "Unauthorized" }, 401);
   }
 });
+
+app.transaction('/send-ether', (c) => {
+  // Send transaction response.
+  return c.send({
+    chainId: 'eip155:10',
+    to: '0xe8f5533ba4C562b2162e8CF9B769A69cd28e811D',
+    value: parseEther('0.0001'),
+  })
+})
 
 devtools(app, { serveStatic });
 
