@@ -12,7 +12,7 @@ import { createClient } from "@vercel/kv";
 config();
 
 const ADD_URL =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=GM&icon=sun&postUrl=https%3A%2F%2Fwearedegens.app%2Fapi%2Fsuperlike";
+  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=sun&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsuperlike";
 
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
