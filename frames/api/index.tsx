@@ -1,5 +1,7 @@
 import {
   Frog,
+  Button,
+  TextInput,
   getFarcasterUserDetails,
   validateFramesMessage,
   parseEther
@@ -8,7 +10,9 @@ import { devtools } from "@airstack/frog/dev";
 import { serveStatic } from "@airstack/frog/serve-static";
 import { handle } from "@airstack/frog/vercel";
 import { config } from "dotenv";
-import { createClient } from "@vercel/kv";
+import { base } from "viem/chains";
+import { Address } from "viem";
+import { degenAbi } from "../abi/degen.js";
 
 config();
 
@@ -21,61 +25,107 @@ export const app = new Frog({
   browserLocation: ADD_URL,
 });
 
-export async function superlike(fid: number) {
-  const redis = createClient({
-    url: process.env.KV_REST_API_URL as string,
-    token: process.env.KV_REST_API_TOKEN as string,
-  });
-  const id = fid.toString();
-  await redis.zincrby("superlike", 1, id);
+app.frame('/', (c) => {
+  return c.res({
+    image: (
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
+        Add "SuperLike Degen!" Action
+      </div>
+    ),
+    intents: [
+      <Button.AddCastAction action="/sl-action">
+        Add
+      </Button.AddCastAction>,
+    ]
+  })
+})
 
-  // Check allowance & balance
+app.castAction(
+  '/sl-action',
+  (c) => {
+    console.log(
+      `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
+      }`,
+    )
 
-  // Transfer to split smart contract
+    return c.frame({ path: '/sl-execute-frame' })
+  },
+  { name: "SuperLike", icon: "flame" }
+)
 
-  // Attestation creation with EAS
-}
-// Cast action handler
-// app.hono.post("/superlike", async (c) => {
-//   console.log(c);
-//   const body = await c.req.json();
+app.frame('/sl-allowance-frame', (c) => {
+  let { frameData, verified } = c;
+  let { inputText = "" } = frameData || {};
+  return c.res({
+    image: (
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
+        Let's set the allowance for your SuperLike Degen tip.
+      </div>
+    ),
+    intents: [
+      <TextInput placeholder="Tip Amount (Degen)" />,
+      <Button.Transaction target="/sl-allowance-action">Approve</Button.Transaction>,
+    ],
+    action: "/sl-execute-frame"
+  })
+})
 
-//   const { isValid, message } = await validateFramesMessage(body);
-//   const interactorFid = message?.data?.fid;
-//   const castFid = message?.data.frameActionBody.castId?.fid as number;
-//   if (isValid) {
-//     if (interactorFid === castFid) {
-//       return c.json({ message: "Nice try." }, 400);
-//     }
+app.transaction('/sl-allowance-action', (c) => {
+  console.log("starting allowance action", c);
 
-//     await superlike(castFid);
+  return c.contract({
+    abi: degenAbi,
+    chainId: `eip155:${base.id}`,
+    functionName: 'approve',
+    args: [
+      // Smart contract address,
+      // Value to approve
+    ],
+    to: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'
+  })
+})
 
-//     const { data, error } = await getFarcasterUserDetails({
-//       fid: castFid,
-//     });
+app.frame('/sl-execute-frame', (c) => {
+  return c.res({
+    image: (
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
+        Now, you can set a comment with EAS or not.
+      </div>
+    ),
+    intents: [
+      <TextInput placeholder="Comment (EAS Attestation)" />,
+      <Button.Transaction target="/sl-execute-action">Tip</Button.Transaction>,
+    ],
+    action: "/sl-thanks"
+  })
+})
 
-//     if (error) {
-//       return c.json({ message: "Error. Try Again." }, 500);
-//     }
-
-//     let message = `Superlike to ${data?.profileName}!`;
-//     if (message.length > 30) {
-//       message = "Superlike!";
-//     }
-
-//     return c.json({ message });
-//   } else {
-//     return c.json({ message: "Unauthorized" }, 401);
-//   }
-// });
-
-app.transaction('/superlike', (c) => {
+app.transaction('/sl-execute-action', (c) => {
+  let address = c.address as Address;
   // Send transaction response.
   console.log("starting superlike", c);
-  return c.send({
-    chainId: 'eip155:10',
-    to: '0xe8f5533ba4C562b2162e8CF9B769A69cd28e811D',
+  return c.contract({
+    abi: [],
+    chainId: `eip155:${base.id}`,
+    functionName: 'execute',
+    args: [
+      address,
+      // Recipient address
+      // Value to send
+      // Comment to attest
+    ],
+    to: '',
     value: parseEther('0.0001'),
+  })
+})
+
+app.frame('/thanks', (c) => {
+  return c.res({
+    image: (
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
+        Thanks for tip with "SuperLike Degen!"
+      </div>
+    )
   })
 })
 
