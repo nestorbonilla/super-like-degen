@@ -13,8 +13,6 @@ import { NeynarAPIClient } from "@neynar/nodejs-sdk"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
 import { createSystem } from "@airstack/frog/ui"
 
-const { Image } = createSystem()
-
 config()
 
 // MAINNET
@@ -34,7 +32,6 @@ export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
   basePath: "/api",
   browserLocation: ADD_URL_PROD,
-  assetsPath: "/",
 })
 
 export const publicClient = createPublicClient({
