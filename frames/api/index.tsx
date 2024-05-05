@@ -12,6 +12,7 @@ import { superLikeAbi } from "../abi/superLike.js"
 import { NeynarAPIClient } from "@neynar/nodejs-sdk"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
 import { createSystem } from "@airstack/frog/ui"
+import { dataApiApp } from "./dataapi.js"
 
 config()
 
@@ -28,6 +29,9 @@ const SUPER_LIKE_BASE_SEPOLIA_CONTRACT =
 const ADD_URL_TEST =
   "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fcead-2607-fb91-3ac-d81e-7c79-32e-fb6f-286d.ngrok-free.app%2Fapi%2Fsuperlike"
 
+const BASE_URL =
+  process.env.BASE_URL || "https://farcaster-super-like.vercel.app"
+
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
   basePath: "/api",
@@ -41,7 +45,7 @@ export const publicClient = createPublicClient({
 
 app.frame("/", (c) => {
   return c.res({
-    image: "/frame_0.png",
+    image: `${BASE_URL}/frame_0.png`,
     intents: [
       <Button.AddCastAction action="/superlike">Add</Button.AddCastAction>,
     ],
@@ -75,7 +79,7 @@ app.castAction(
 
 app.frame("/allowance-frame", (c) => {
   return c.res({
-    image: "/frame_0.png",
+    image: `${BASE_URL}/frame_0.png`,
     intents: [
       <Button.Transaction target="/allowance-action">
         Approve
@@ -97,7 +101,7 @@ app.transaction("/allowance-action", (c) => {
 
 app.frame("/like-frame", (c) => {
   return c.res({
-    image: "/frame_0.png",
+    image: `${BASE_URL}/frame_0.png`,
     intents: [
       <TextInput placeholder="Comment (optional)" />,
       <Button.Transaction target="/like-action">25 $DEGEN</Button.Transaction>,
@@ -192,9 +196,11 @@ app.transaction("/like-action", async (c) => {
 
 app.frame("/done", (c) => {
   return c.res({
-    image: "/frame_0.png",
+    image: `${BASE_URL}/frame_0.png`,
   })
 })
+
+app.route("/superlike-data", dataApiApp)
 
 devtools(app, { serveStatic })
 
