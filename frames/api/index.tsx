@@ -192,40 +192,6 @@ app.transaction("/like-action", async (c) => {
 })
 
 app.frame("/done", async (c) => {
-  const client = new NeynarAPIClient(NEYNAR_API_KEY)
-  const data = await c.req.json()
-  const username = await client
-    .fetchBulkUsers([data.untrustedData.fid])
-    .then((res) => res.users[0].username)
-
-  const comment = data.untrustedData.inputText?.slice(0, 80)
-
-  let amount = 50
-  switch (data.untrustedData.buttonIndex) {
-    case 1:
-      amount = 10
-      break
-    case 2:
-      amount = 50
-      break
-    case 3:
-      amount = 100
-      break
-    default:
-      amount = 0
-      break
-  }
-
-  await client.publishCast(
-    NEYNAR_SIGNER_KEY,
-    `Super Like from @${username}!\n${comment && `${comment}\n\n`
-    }${amount} $DEGEN transfered`,
-    {
-      replyTo: c.frameData?.castId.hash,
-      embeds: [{ url: `${BASE_URL}/frame_00.jpg` }],
-    }
-  )
-
   return c.res({
     image: `${BASE_URL}/frame_03.jpg`,
   })
