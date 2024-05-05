@@ -62,13 +62,15 @@ app.castAction(
   (c) => {
     const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
 
+    console.log("superlike action started");
     let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
     console.log("likerAddress: ", likerAddress);
+    console.log("superlike action ended");
 
-    console.log(
-      `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
-      } and data: ${JSON.stringify(c)}`,
-    )
+    // console.log(
+    //   `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
+    //   } and data: ${JSON.stringify(c)}`,
+    // )
 
     return c.frame({ path: '/sl-allowance-frame' })
   },
