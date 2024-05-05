@@ -32,7 +32,7 @@ const SUPER_LIKE_BASE_MAINNET_CONTRACT = ""
 // SEPOLIA
 const DEGEN_BASE_SEPOLIA_CONTRACT = "0x6Df63D498E27B860a58a441D8AA7ea54338830F8"
 const SUPER_LIKE_BASE_SEPOLIA_CONTRACT =
-  "0x49B12Aa31CC41E0D66484D5B0E2FFD6805ACb2cD"
+  "0x84Ec3C369d8d327c6B37AF11C1c4BD6007f91a96"
 
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
@@ -124,7 +124,7 @@ app.frame('/sl-like-frame', (c) => {
       <Button.Transaction target="/sl-execute-action">$50</Button.Transaction>,
       <Button.Transaction target="/sl-execute-action">$100</Button.Transaction>
     ],
-    action: "/sl-thanks"
+    action: "/done"
   })
 })
 
@@ -209,7 +209,7 @@ app.transaction('/sl-execute-action', async (c) => {
   })
 })
 
-app.frame('/thanks', (c) => {
+app.frame('/done', (c) => {
   return c.res({
     image: (
       <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
