@@ -1,18 +1,11 @@
-import {
-  Frog,
-  Button,
-  TextInput,
-  getFarcasterUserDetails,
-  validateFramesMessage,
-  parseEther,
-} from "@airstack/frog"
+import { Frog, Button, TextInput, parseEther } from "@airstack/frog"
 import { http, createPublicClient } from "viem"
 import { devtools } from "@airstack/frog/dev"
 import { serveStatic } from "@airstack/frog/serve-static"
 import { handle } from "@airstack/frog/vercel"
 import { config } from "dotenv"
 import { base, baseSepolia } from "viem/chains"
-import { Address, toHex } from "viem"
+import { Address } from "viem"
 import { degenAbi } from "../abi/degen.js"
 import { tokenAbi } from "../abi/erc20.js"
 import { superLikeAbi } from "../abi/superLike.js"
@@ -50,11 +43,7 @@ export const publicClient = createPublicClient({
 
 app.frame("/", (c) => {
   return c.res({
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        <Image src="/frame_0.png" />
-      </div>
-    ),
+    image: "/frame_0.png",
     intents: [
       <Button.AddCastAction action="/superlike">Add</Button.AddCastAction>,
     ],
@@ -88,11 +77,7 @@ app.castAction(
 
 app.frame("/allowance-frame", (c) => {
   return c.res({
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        <Image src="/frame_0.png" />
-      </div>
-    ),
+    image: "/frame_0.png",
     intents: [
       <Button.Transaction target="/allowance-action">
         Approve
@@ -114,11 +99,7 @@ app.transaction("/allowance-action", (c) => {
 
 app.frame("/like-frame", (c) => {
   return c.res({
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        <Image src="/frame_0.png" />
-      </div>
-    ),
+    image: "/frame_0.png",
     intents: [
       <TextInput placeholder="Comment (optional)" />,
       <Button.Transaction target="/like-action">25 $DEGEN</Button.Transaction>,
@@ -213,11 +194,7 @@ app.transaction("/like-action", async (c) => {
 
 app.frame("/done", (c) => {
   return c.res({
-    image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        <Image src="/frame_0.png" />
-      </div>
-    ),
+    image: "/frame_0.png",
   })
 })
 
