@@ -10,12 +10,17 @@
   },
   "dependencies": {
     "@airstack/frog": "^0.0.12",
+    "@apollo/client": "^3.10.2",
+    "@ethereum-attestation-service/eas-sdk": "^2.1.4",
     "@neynar/nodejs-sdk": "^1.21.2",
     "@vercel/kv": "^1.0.1",
+    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
-    "hono": "^4.3.0"
+    "hono": "^4.3.0",
+    "json-bigint": "^1.0.0"
   },
   "devDependencies": {
+    "@types/json-bigint": "^1.0.4",
     "tsx": "^4.9.0",
     "typescript": "^5.4.5",
     "vercel": "^34.1.8"
