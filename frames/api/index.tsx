@@ -69,13 +69,13 @@ app.castAction(
   { name: "SuperLike", icon: "flame" }
 )
 
-app.frame('/sl-allowance-frame', async (c) => {
+app.frame('/sl-allowance-frame', (c) => {
   let { frameData, verified } = c;
   let likerAddress = frameData?.address as Address;
 
   const maxAllowance = 2 ** 256 - 1;
-
-  const data = await publicClient.readContract({
+  console.log("before read contract");
+  const data = publicClient.readContract({
     address: DEGEN_BASE_SEPOLIA_CONTRACT,
     abi: degenAbi,
     functionName: 'allowance',
