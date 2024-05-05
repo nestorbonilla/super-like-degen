@@ -83,7 +83,7 @@ app.frame("/allowance-frame", (c) => {
 app.transaction("/allowance-action", (c) => {
   return c.contract({
     abi: tokenAbi,
-    chainId: `eip155:${baseSepolia.id}`,
+    chainId: `eip155:${Number(CHAIN_ID)}` as any,
     functionName: "approve",
     args: [SUPER_LIKE_CONTRACT, parseEther("10000")],
     to: DEGEN_CONTRACT,
@@ -177,7 +177,7 @@ app.transaction("/like-action", async (c) => {
   ])
   return c.contract({
     abi: superLikeAbi,
-    chainId: `eip155:${baseSepolia.id}`,
+    chainId: `eip155:${Number(CHAIN_ID)}` as any,
     functionName: "execute",
     args: [
       recipientAddress,
