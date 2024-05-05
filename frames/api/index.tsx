@@ -64,14 +64,17 @@ app.castAction(
 
     console.log("superlike action started");
     // let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) =>  res.users[0].verified_addresses.eth_addresses[0] as Address);
-    let userPromise = await client.fetchBulkUsers([c.actionData.fid]);
+    let userData = await client.fetchBulkUsers([c.actionData.fid]);
+    console.log("userData: ", userData);
+    let userAddress = userData.users[0].verified_addresses.eth_addresses[0] as Address
+    console.log("userAddress: ", userAddress);
     // let userData = userPromise
     //   .then((res: any) => res.users[0].verified_addresses.eth_addresses[0] as Address)
     //   .catch((error) => {
     //     console.error('Error al obtener los datos del usuario:', error);
     //     throw error; // Re-lanza el error para que sea manejado más arriba si es necesario
     //   });
-    console.log("likerAddressToRead: ", userPromise);
+
     console.log("superlike action ended");
 
     // const data = publicClient.readContract({
