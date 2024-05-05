@@ -11,35 +11,26 @@ import { tokenAbi } from "../abi/erc20.js"
 import { superLikeAbi } from "../abi/superLike.js"
 import { NeynarAPIClient } from "@neynar/nodejs-sdk"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
-import { createSystem } from "@airstack/frog/ui"
 import { dataApiApp } from "./dataapi.js"
+import {
+  ADD_URL,
+  AIRSTACK_API_KEY,
+  BASE_URL,
+  CHAIN_ID,
+  DEGEN_CONTRACT,
+  SUPER_LIKE_CONTRACT,
+} from "../lib/config.js"
 
 config()
 
-// MAINNET
-// const DEGEN_BASE_MAINNET_CONTRACT = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
-// const SUPER_LIKE_BASE_MAINNET_CONTRACT = ""
-const ADD_URL_PROD =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsuperlike"
-
-// SEPOLIA
-const DEGEN_BASE_SEPOLIA_CONTRACT = "0x6Df63D498E27B860a58a441D8AA7ea54338830F8"
-const SUPER_LIKE_BASE_SEPOLIA_CONTRACT =
-  "0x84Ec3C369d8d327c6B37AF11C1c4BD6007f91a96"
-const ADD_URL_TEST =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fcead-2607-fb91-3ac-d81e-7c79-32e-fb6f-286d.ngrok-free.app%2Fapi%2Fsuperlike"
-
-const BASE_URL =
-  process.env.BASE_URL || "https://farcaster-super-like.vercel.app"
-
 export const app = new Frog({
-  apiKey: process.env.AIRSTACK_API_KEY as string,
+  apiKey: AIRSTACK_API_KEY as string,
   basePath: "/api",
-  browserLocation: ADD_URL_PROD,
+  browserLocation: ADD_URL,
 })
 
 export const publicClient = createPublicClient({
-  chain: baseSepolia,
+  chain: CHAIN_ID === "8453" ? base : baseSepolia,
   transport: http(),
 })
 
@@ -62,10 +53,10 @@ app.castAction(
         (res) => res.users[0].verified_addresses.eth_addresses[0] as Address
       )
     const allowance = await publicClient.readContract({
-      address: DEGEN_BASE_SEPOLIA_CONTRACT,
+      address: DEGEN_CONTRACT,
       abi: degenAbi,
       functionName: "allowance",
-      args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT],
+      args: [userAddress, SUPER_LIKE_CONTRACT],
     })
 
     if (allowance >= parseEther("100")) {
@@ -92,10 +83,10 @@ app.frame("/allowance-frame", (c) => {
 app.transaction("/allowance-action", (c) => {
   return c.contract({
     abi: tokenAbi,
-    chainId: `eip155:${baseSepolia.id}`,
+    chainId: `eip155:${Number(CHAIN_ID)}` as any,
     functionName: "approve",
-    args: [SUPER_LIKE_BASE_SEPOLIA_CONTRACT, parseEther("10000")],
-    to: DEGEN_BASE_SEPOLIA_CONTRACT,
+    args: [SUPER_LIKE_CONTRACT, parseEther("10000")],
+    to: DEGEN_CONTRACT,
   })
 })
 
@@ -115,6 +106,9 @@ app.frame("/like-frame", (c) => {
 app.transaction("/like-action", async (c) => {
   const { inputText, buttonIndex, frameData } = c
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+  let userAddress = await client
+    .fetchBulkUsers([Number(c.frameData?.fid)])
+    .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
   let recipientAddress = await client
     .fetchBulkUsers([Number(frameData?.castId.fid)])
     .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
@@ -134,10 +128,11 @@ app.transaction("/like-action", async (c) => {
       break
   }
   const taxAmount = await publicClient.readContract({
-    address: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
+    address: SUPER_LIKE_CONTRACT,
     abi: superLikeAbi,
     functionName: "calcTax",
-    args: [DEGEN_BASE_SEPOLIA_CONTRACT],
+    args: [DEGEN_CONTRACT],
+    account: userAddress as Address,
   })
 
   const schemaEncoder = new SchemaEncoder(
@@ -176,21 +171,21 @@ app.transaction("/like-action", async (c) => {
     },
     {
       name: "currency",
-      value: DEGEN_BASE_SEPOLIA_CONTRACT,
+      value: DEGEN_CONTRACT,
       type: "address",
     },
   ])
   return c.contract({
     abi: superLikeAbi,
-    chainId: `eip155:${baseSepolia.id}`,
+    chainId: `eip155:${Number(CHAIN_ID)}` as any,
     functionName: "execute",
     args: [
       recipientAddress,
       encodedData as `0x${string}`,
-      DEGEN_BASE_SEPOLIA_CONTRACT,
+      DEGEN_CONTRACT,
       parseEther(amount.toString()),
     ],
-    to: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
+    to: SUPER_LIKE_CONTRACT,
   })
 })
 

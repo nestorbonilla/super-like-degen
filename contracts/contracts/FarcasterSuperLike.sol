@@ -34,13 +34,11 @@ contract FarcasterSuperLike is Context {
     }
 
     function execute(address _to, bytes memory _data, address _currency, uint256 _amount) external payable {
-        _payment(_currency, _amount);
+        _payment(_currency, _amount, _to);
         _writeEAS(_to, _data);
     }
 
-    function _payment(address currency, uint256 amount) internal {
-        uint256 tax = _calcTax(currency);
-
+    function _payment(address currency, uint256 amount, address _to) internal {
         TimeCount storage timeCounter = timesCounter[_msgSender()];
         if (timeCounter.expirationTime < block.timestamp) {
             timeCounter.expirationTime = uint64(block.timestamp + 1 days);
@@ -49,15 +47,26 @@ contract FarcasterSuperLike is Context {
             timeCounter.times++;
         }
 
+        uint256 taxUnit = _taxUnit(currency);
+        uint256 tax;
+        
+        if (timeCounter.expirationTime > block.timestamp) {
+            tax = (timeCounter.times ^ 2) * taxUnit;
+        } else {
+            tax = taxUnit;
+        }
+
         if (currency == address(0)) {
             require(msg.value == amount + tax, "Forwarder: not enough");
             // transfer eth from this contract
-            (bool sent, bytes memory data) = poolWallet.call{value: amount}("");
-            require(sent, "Failed to send Ether");
+            (bool sentTax, bytes memory dataTax) = poolWallet.call{value: tax}("");
+            (bool sent, bytes memory data) = _to.call{value: amount}("");
+            require(sent && sentTax, "Failed to send Ether");
         } else {
             require(availableTokens[currency].available, "Forwarder: the token is not available");
             IERC20 token = IERC20(currency);
-            token.transferFrom(_msgSender(), poolWallet, amount);
+            token.transferFrom(_msgSender(), poolWallet, tax);
+            token.transferFrom(_msgSender(), _to, amount);
         }
     }
 
@@ -77,17 +86,12 @@ contract FarcasterSuperLike is Context {
     }
 
     function calcTax(address currency) view external returns (uint256) {
-        return _calcTax(currency);
-    }
-
-    function _calcTax(address currency) view internal returns (uint256) {
-        TimeCount storage timeCounter = timesCounter[_msgSender()];
+        TimeCount memory timeCounter = timesCounter[_msgSender()];
         uint256 taxUnit = _taxUnit(currency);
         uint256 tax = taxUnit;
 
         if (timeCounter.expirationTime > block.timestamp) {
-            tax = timeCounter.times ^ 2 * taxUnit;
-            
+            tax = (timeCounter.times ^ 2) * taxUnit;
         }
 
         return tax;
