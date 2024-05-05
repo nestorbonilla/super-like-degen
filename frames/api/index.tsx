@@ -72,8 +72,8 @@ app.castAction(
 app.frame('/sl-allowance-frame', (c) => {
   let { frameData, verified } = c;
   console.log("sl-allowance-frame data: ", c);
-  // let likerAddress = frameData?.address as Address;
-
+  let likerAddress = frameData?.address as Address;
+  console.log("sl-allowance-frame address: ", likerAddress);
   // // const maxAllowance = 2 ** 256 - 1;
   // console.log("before read contract");
 
