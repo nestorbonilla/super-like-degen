@@ -1,7 +1,7 @@
 import { ApolloClient, gql, InMemoryCache } from "@apollo/client/index.js"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
 import jsonBig from "json-bigint"
-import { EAS_SCHEME_UID } from "./config.js"
+import { EAS_GRAPHAPI_URL, EAS_SCHEME_UID } from "./config.js"
 
 export type DecodedSchema = {
   name:
@@ -36,7 +36,7 @@ export type ParsedSchema = {
 }
 
 export const easgraphClient = new ApolloClient({
-  uri: "https://base-sepolia.easscan.org/graphql",
+  uri: EAS_GRAPHAPI_URL,
   cache: new InMemoryCache(),
 })
 

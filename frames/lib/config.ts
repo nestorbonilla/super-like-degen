@@ -6,4 +6,5 @@ export const SUPER_LIKE_CONTRACT = process.env
 export const BASE_URL =
   process.env.BASE_URL || "https://farcaster-super-like.vercel.app"
 export const CHAIN_ID = process.env.CHAIN_ID! || "84532"
+export const EAS_GRAPHAPI_URL = process.env.EAS_GRAPHAPI_URL!
 export const EAS_SCHEME_UID = process.env.EAS_SCHEME_UID!
