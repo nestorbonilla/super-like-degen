@@ -4,14 +4,15 @@ import {
   TextInput,
   getFarcasterUserDetails,
   validateFramesMessage,
-  parseEther
+  parseEther,
 } from "@airstack/frog";
+import { http, createPublicClient } from 'viem';
 import { devtools } from "@airstack/frog/dev";
 import { serveStatic } from "@airstack/frog/serve-static";
 import { handle } from "@airstack/frog/vercel";
 import { config } from "dotenv";
 import { base, baseSepolia } from "viem/chains";
-import { Address } from "viem";
+import { Address, numberToHex } from "viem";
 import { degenAbi } from "../abi/degen.js";
 import { tokenAbi } from "../abi/erc20.js";
 import { superLikeAbi } from "../abi/superLike.js";
@@ -34,6 +35,11 @@ export const app = new Frog({
   basePath: "/api",
   browserLocation: ADD_URL,
 });
+
+export const publicClient = createPublicClient({
+  chain: baseSepolia,
+  transport: http(),
+})
 
 app.frame('/', (c) => {
   return c.res({
@@ -63,9 +69,19 @@ app.castAction(
   { name: "SuperLike", icon: "flame" }
 )
 
-app.frame('/sl-allowance-frame', (c) => {
+app.frame('/sl-allowance-frame', async (c) => {
   let { frameData, verified } = c;
-  console.log("frameData from allowance: ", frameData);
+  let likerAddress = frameData?.address as Address;
+
+  const maxAllowance = 2 ** 256 - 1;
+
+  const data = await publicClient.readContract({
+    address: DEGEN_BASE_SEPOLIA_CONTRACT,
+    abi: degenAbi,
+    functionName: 'allowance',
+    args: [likerAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
+  })
+  console.log("allowance data: ", data);
   // let { inputText = "" } = frameData || {};
   return c.res({
     image: (
@@ -83,18 +99,24 @@ app.frame('/sl-allowance-frame', (c) => {
 
 app.transaction('/sl-allowance-action', (c) => {
   console.log("starting allowance action", c);
-  const { inputText } = c
+  const { inputText, address } = c
 
-  return c.contract({
-    abi: tokenAbi,
-    chainId: `eip155:${baseSepolia.id}`,
-    functionName: 'approve',
-    args: [
-      SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
-      parseEther(inputText ?? "0")
-    ],
-    to: DEGEN_BASE_SEPOLIA_CONTRACT
-  })
+  let allowance = 1;
+  if (allowance < 1) {
+    return c.contract({
+      abi: tokenAbi,
+      chainId: `eip155:${baseSepolia.id}`,
+      functionName: 'approve',
+      args: [
+        SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
+        parseEther(inputText ?? "0")
+      ],
+      to: DEGEN_BASE_SEPOLIA_CONTRACT
+    })
+  }
+  return null;
+
+
 })
 
 app.frame('/sl-execute-frame', (c) => {
