@@ -65,12 +65,21 @@ app.castAction(
     console.log("superlike action started");
     // let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) =>  res.users[0].verified_addresses.eth_addresses[0] as Address);
     let userPromise = client.fetchBulkUsers([c.actionData.fid]);
-    let userData = userPromise.then((userPromiseData: any) => {
-      console.log('new likerAddress:', userPromiseData);
-      console.log('new2 likerAddress:', userPromiseData.users[0].verified_addresses.eth_addresses[0]);
-    });
-    // console.log("likerAddress: ", likerAddress);
+    let userData = userPromise
+      .then((res: any) => res.users[0].verified_addresses.eth_addresses[0] as Address)
+      .catch((error) => {
+        console.error('Error al obtener los datos del usuario:', error);
+        throw error; // Re-lanza el error para que sea manejado más arriba si es necesario
+      });
+    console.log("likerAddress: ", userData);
     console.log("superlike action ended");
+
+    // const data = publicClient.readContract({
+    //   address: DEGEN_BASE_SEPOLIA_CONTRACT,
+    //   abi: degenAbi,
+    //   functionName: 'allowance',
+    //   args: [likerAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
+    // })
 
     // console.log(
     //   `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
