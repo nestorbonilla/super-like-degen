@@ -62,27 +62,31 @@ app.frame("/", (c) => {
 })
 
 app.castAction(
-  '/superlike',
+  "/superlike",
   async (c) => {
-    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
-    let userAddress = await client.fetchBulkUsers([c.actionData.fid]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
+    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+    let userAddress = await client
+      .fetchBulkUsers([c.actionData.fid])
+      .then(
+        (res) => res.users[0].verified_addresses.eth_addresses[0] as Address
+      )
     const allowance = await publicClient.readContract({
       address: DEGEN_BASE_SEPOLIA_CONTRACT,
       abi: degenAbi,
-      functionName: 'allowance',
-      args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
-    });
+      functionName: "allowance",
+      args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT],
+    })
 
-    if (allowance >= parseEther('100')) {
-      return c.frame({ path: '/like-frame' })
+    if (allowance >= parseEther("100")) {
+      return c.frame({ path: "/like-frame" })
     } else {
-      return c.frame({ path: '/allowance-frame' })
+      return c.frame({ path: "/allowance-frame" })
     }
   },
   { name: "SuperLike Degen", icon: "flame" }
 )
 
-app.frame('/allowance-frame', (c) => {
+app.frame("/allowance-frame", (c) => {
   return c.res({
     image: (
       <div style={{ color: "white", display: "flex", fontSize: 60 }}>
@@ -90,27 +94,25 @@ app.frame('/allowance-frame', (c) => {
       </div>
     ),
     intents: [
-      <Button.Transaction target="/allowance-action">Approve</Button.Transaction>,
+      <Button.Transaction target="/allowance-action">
+        Approve
+      </Button.Transaction>,
     ],
-    action: "/like-frame"
+    action: "/like-frame",
   })
 })
 
-app.transaction('/allowance-action', (c) => {
+app.transaction("/allowance-action", (c) => {
   return c.contract({
     abi: tokenAbi,
     chainId: `eip155:${baseSepolia.id}`,
-    functionName: 'approve',
-    args: [
-      SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
-      parseEther("10000")
-    ],
-    to: DEGEN_BASE_SEPOLIA_CONTRACT
+    functionName: "approve",
+    args: [SUPER_LIKE_BASE_SEPOLIA_CONTRACT, parseEther("10000")],
+    to: DEGEN_BASE_SEPOLIA_CONTRACT,
   })
-
 })
 
-app.frame('/like-frame', (c) => {
+app.frame("/like-frame", (c) => {
   return c.res({
     image: (
       <div style={{ color: "white", display: "flex", fontSize: 60 }}>
@@ -121,37 +123,38 @@ app.frame('/like-frame', (c) => {
       <TextInput placeholder="Comment (optional)" />,
       <Button.Transaction target="/like-action">25 $DEGEN</Button.Transaction>,
       <Button.Transaction target="/like-action">50 $DEGEN</Button.Transaction>,
-      <Button.Transaction target="/like-action">100 $DEGEN</Button.Transaction>
+      <Button.Transaction target="/like-action">100 $DEGEN</Button.Transaction>,
     ],
-    action: "/done"
+    action: "/done",
   })
 })
 
-app.transaction('/like-action', async (c) => {
-
-  const { inputText, buttonIndex, frameData } = c;
-  const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
-  let recipientAddress = await client.fetchBulkUsers([Number(frameData?.castId.fid)]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
-  let amount = 0;
+app.transaction("/like-action", async (c) => {
+  const { inputText, buttonIndex, frameData } = c
+  const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+  let recipientAddress = await client
+    .fetchBulkUsers([Number(frameData?.castId.fid)])
+    .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
+  let amount = 0
   switch (buttonIndex) {
     case 1:
-      amount = 25;
-      break;
+      amount = 25
+      break
     case 2:
-      amount = 50;
-      break;
+      amount = 50
+      break
     case 3:
-      amount = 100;
-      break;
+      amount = 100
+      break
     default:
-      amount = 0;
-      break;
+      amount = 0
+      break
   }
   const taxAmount = await publicClient.readContract({
     address: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
     abi: superLikeAbi,
-    functionName: 'calcTax',
-    args: [DEGEN_BASE_SEPOLIA_CONTRACT]
+    functionName: "calcTax",
+    args: [DEGEN_BASE_SEPOLIA_CONTRACT],
   })
 
   const schemaEncoder = new SchemaEncoder(
@@ -197,28 +200,28 @@ app.transaction('/like-action', async (c) => {
   return c.contract({
     abi: superLikeAbi,
     chainId: `eip155:${baseSepolia.id}`,
-    functionName: 'execute',
+    functionName: "execute",
     args: [
       recipientAddress,
       encodedData as `0x${string}`,
       DEGEN_BASE_SEPOLIA_CONTRACT,
-      parseEther(amount.toString())
+      parseEther(amount.toString()),
     ],
-    to: SUPER_LIKE_BASE_SEPOLIA_CONTRACT
+    to: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
   })
 })
 
-app.frame('/done', (c) => {
+app.frame("/done", (c) => {
   return c.res({
     image: (
       <div style={{ color: "white", display: "flex", fontSize: 60 }}>
         <Image src="/frame_0.png" />
       </div>
-    )
+    ),
   })
 })
 
-devtools(app, { serveStatic });
+devtools(app, { serveStatic })
 
-export const GET = handle(app);
-export const POST = handle(app);
+export const GET = handle(app)
+export const POST = handle(app)

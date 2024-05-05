@@ -5,7 +5,7 @@ import {
   getParsedAttestations,
   getReceiveData,
   getTaxData,
-} from "./superlike.js"
+} from "../lib/superlike.js"
 import { getGrobalEngagementRank } from "../lib/openrank.js"
 
 export const dataApiApp = new Frog({

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npx @airstack/frog vercel-build",
     "dev": "npx @airstack/frog dev",
+    "start": "npx @airstack/frog start",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel"
   },
