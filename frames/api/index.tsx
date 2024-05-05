@@ -18,6 +18,8 @@ import {
   BASE_URL,
   CHAIN_ID,
   DEGEN_CONTRACT,
+  NEYNAR_API_KEY,
+  NEYNAR_SIGNER_KEY,
   SUPER_LIKE_CONTRACT,
 } from "../lib/config.js"
 
@@ -46,7 +48,7 @@ app.frame("/", (c) => {
 app.castAction(
   "/superlike",
   async (c) => {
-    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+    const client = new NeynarAPIClient(NEYNAR_API_KEY)
     let userAddress = await client
       .fetchBulkUsers([c.actionData.fid])
       .then(
@@ -95,7 +97,7 @@ app.frame("/like-frame", (c) => {
     image: `${BASE_URL}/frame_0.jpg`,
     intents: [
       <TextInput placeholder="Comment (optional)" />,
-      <Button.Transaction target="/like-action">25 $DEGEN</Button.Transaction>,
+      <Button.Transaction target="/like-action">10 $DEGEN</Button.Transaction>,
       <Button.Transaction target="/like-action">50 $DEGEN</Button.Transaction>,
       <Button.Transaction target="/like-action">100 $DEGEN</Button.Transaction>,
     ],
@@ -105,7 +107,7 @@ app.frame("/like-frame", (c) => {
 
 app.transaction("/like-action", async (c) => {
   const { inputText, buttonIndex, frameData } = c
-  const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+  const client = new NeynarAPIClient(NEYNAR_API_KEY)
   let userAddress = await client
     .fetchBulkUsers([Number(c.frameData?.fid)])
     .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
@@ -115,7 +117,7 @@ app.transaction("/like-action", async (c) => {
   let amount = 0
   switch (buttonIndex) {
     case 1:
-      amount = 25
+      amount = 10
       break
     case 2:
       amount = 50
@@ -189,7 +191,42 @@ app.transaction("/like-action", async (c) => {
   })
 })
 
-app.frame("/done", (c) => {
+app.frame("/done", async (c) => {
+  const client = new NeynarAPIClient(NEYNAR_API_KEY)
+  const data = await c.req.json()
+  const username = await client
+    .fetchBulkUsers([data.untrustedData.fid])
+    .then((res) => res.users[0].username)
+
+  const comment = data.untrustedData.inputText?.slice(0, 80)
+
+  let amount = 50
+  switch (data.untrustedData.buttonIndex) {
+    case 1:
+      amount = 10
+      break
+    case 2:
+      amount = 50
+      break
+    case 3:
+      amount = 100
+      break
+    default:
+      amount = 0
+      break
+  }
+
+  await client.publishCast(
+    NEYNAR_SIGNER_KEY,
+    `Super Like from @${username}!\n${
+      comment && `${comment}\n\n`
+    }${amount} $DEGEN transfered`,
+    {
+      replyTo: c.frameData?.castId.hash,
+      embeds: [{ url: `${BASE_URL}/frame_0.jpg` }],
+    }
+  )
+
   return c.res({
     image: `${BASE_URL}/frame_0.jpg`,
   })
