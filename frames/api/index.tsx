@@ -16,6 +16,7 @@ import { Address, numberToHex } from "viem";
 import { degenAbi } from "../abi/degen.js";
 import { tokenAbi } from "../abi/erc20.js";
 import { superLikeAbi } from "../abi/superLike.js";
+import { NeynarAPIClient, FeedType, FilterType } from "@neynar/nodejs-sdk";
 
 config();
 
@@ -59,6 +60,11 @@ app.frame('/', (c) => {
 app.castAction(
   '/superlike',
   (c) => {
+    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
+
+    let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
+    console.log("likerAddress: ", likerAddress);
+
     console.log(
       `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
       } and data: ${JSON.stringify(c)}`,

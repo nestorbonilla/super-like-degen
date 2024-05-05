@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@airstack/frog": "^0.0.12",
+    "@neynar/nodejs-sdk": "^1.21.2",
     "@vercel/kv": "^1.0.1",
     "dotenv": "^16.4.5",
     "hono": "^4.3.0"
