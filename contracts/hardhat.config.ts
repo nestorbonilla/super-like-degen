@@ -11,6 +11,10 @@ const config: HardhatUserConfig = {
       accounts: [process.env.TEST_PRIVATE_KEY!],
       url: process.env.BASE_SEPOLIA_URL,
     },
+    base: {
+      accounts: [process.env.MAIN_PRIVATE_KEY!],
+      url: process.env.BASE_URL,
+    },
   },
   etherscan: {
     // Your API key for Etherscan
@@ -27,6 +31,7 @@ const config: HardhatUserConfig = {
     ],
     apiKey: {
       base_sepolia: process.env.BASE_SEPOLIA_EXPLORER_KEY!,
+      base: process.env.BASE_EXPLORER_KEY!,
     },
   },
 }
