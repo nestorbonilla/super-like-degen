@@ -1,4 +1,4 @@
-import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core"
+import { ApolloClient, gql, InMemoryCache } from "@apollo/client/index.js"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
 import jsonBig from "json-bigint"
 
