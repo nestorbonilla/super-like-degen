@@ -3,7 +3,7 @@ import { ethers } from "hardhat"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
 
 const main = async () => {
-  const slContractAddress = "0x49B12Aa31CC41E0D66484D5B0E2FFD6805ACb2cD"
+  const slContractAddress = "0x84Ec3C369d8d327c6B37AF11C1c4BD6007f91a96"
   const toAddress = "0xdCb93093424447bF4FE9Df869750950922F1E30B"
   const contract = await ethers.getContractAt(
     "FarcasterSuperLike",
@@ -16,7 +16,7 @@ const main = async () => {
 
   // make data to bytes for smartcontract
   const schemaEncoder = new SchemaEncoder(
-    "address cast_hash, string comment, uint256 to_fid, uint256 from_fid, uint256 tax_amount, address currency"
+    "address cast_hash, string comment, uint256 to_fid, uint256 from_fid, uint256 tax_amount, uint256 tip_amount, address currency"
   )
   const encodedData = schemaEncoder.encodeData([
     {
@@ -42,6 +42,11 @@ const main = async () => {
     {
       name: "tax_amount",
       value: taxAmount as any,
+      type: "uint256",
+    },
+    {
+      name: "tip_amount",
+      value: 5000,
       type: "uint256",
     },
     {
