@@ -4,25 +4,26 @@ import {
   TextInput,
   getFarcasterUserDetails,
   validateFramesMessage,
-  parseEther,
-} from "@airstack/frog"
-import { http, createPublicClient } from "viem"
-import { devtools } from "@airstack/frog/dev"
-import { serveStatic } from "@airstack/frog/serve-static"
-import { handle } from "@airstack/frog/vercel"
-import { config } from "dotenv"
-import { base, baseSepolia } from "viem/chains"
-import { Address, numberToHex } from "viem"
-import { degenAbi } from "../abi/degen.js"
-import { tokenAbi } from "../abi/erc20.js"
-import { superLikeAbi } from "../abi/superLike.js"
-import { NeynarAPIClient, FeedType, FilterType } from "@neynar/nodejs-sdk"
+  parseEther
+} from "@airstack/frog";
+import { http, createPublicClient } from 'viem';
+import { devtools } from "@airstack/frog/dev";
+import { serveStatic } from "@airstack/frog/serve-static";
+import { handle } from "@airstack/frog/vercel";
+import { config } from "dotenv";
+import { base, baseSepolia } from "viem/chains";
+import { Address, toHex } from "viem";
+import { degenAbi } from "../abi/degen.js";
+import { tokenAbi } from "../abi/erc20.js";
+import { superLikeAbi } from "../abi/superLike.js";
+import { NeynarAPIClient } from "@neynar/nodejs-sdk";
+import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk";
 import { dataApiApp } from "./dataapi.js"
 
 config()
 
 const ADD_URL =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2F477f-172-90-234-126.ngrok-free.app%2Fapi%2Fsuperlike"
+  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fcead-2607-fb91-3ac-d81e-7c79-32e-fb6f-286d.ngrok-free.app%2Fapi%2Fsuperlike"
 
 // MAINNET
 const DEGEN_BASE_MAINNET_CONTRACT = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"
@@ -58,125 +59,167 @@ app.frame("/", (c) => {
 })
 
 app.castAction(
-  "/superlike",
+  '/superlike',
   async (c) => {
-    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+    const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
 
-    console.log("superlike action started")
-    // let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) =>  res.users[0].verified_addresses.eth_addresses[0] as Address);
-    let userData = await client.fetchBulkUsers([c.actionData.fid])
-    console.log("userData: ", userData)
-    let userAddress = userData.users[0].verified_addresses
-      .eth_addresses[0] as Address
-    console.log("userAddress: ", userAddress)
-    const queryResult = await publicClient.readContract({
+    console.log("superlike action started");
+    // let userData = await client.fetchBulkUsers([c.actionData.fid]);
+    let userAddress = await client.fetchBulkUsers([c.actionData.fid]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
+    // console.log("userAddress: ", userAddress);
+    const allowance = await publicClient.readContract({
       address: DEGEN_BASE_SEPOLIA_CONTRACT,
       abi: degenAbi,
-      functionName: "allowance",
-      args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT],
-    })
-    console.log("queryResult: ", queryResult)
+      functionName: 'allowance',
+      args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
+    });
 
-    return c.frame({ path: "/sl-allowance-frame" })
+    if (allowance >= parseEther('100')) {
+      return c.frame({ path: '/sl-like-frame' })
+    } else {
+      return c.frame({ path: '/sl-allowance-frame' })
+    }
   },
   { name: "SuperLike", icon: "flame" }
 )
 
-app.frame("/sl-allowance-frame", (c) => {
-  let { frameData, verified } = c
-  c.req.bodyCache
-  console.log("sl-allowance-frame data: ", c)
-  let likerAddress = frameData?.address as Address
-  console.log("sl-allowance-frame address: ", likerAddress)
-  // // const maxAllowance = 2 ** 256 - 1;
-  // console.log("before read contract");
-
-  // const data = publicClient.readContract({
-  //   address: DEGEN_BASE_SEPOLIA_CONTRACT,
-  //   abi: degenAbi,
-  //   functionName: 'allowance',
-  //   args: [likerAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
-  // })
-  // console.log("allowance data: ", data);
-  // let { inputText = "" } = frameData || {};
+app.frame('/sl-allowance-frame', (c) => {
   return c.res({
     image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-        Let's set the allowance for your SuperLike Degen tip.
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
+        Give me permission to send your tip.
       </div>
     ),
     intents: [
-      <TextInput placeholder="Tip Amount (Degen)" />,
-      <Button.Transaction target="/sl-allowance-action">
-        Approve
-      </Button.Transaction>,
+      <Button.Transaction target="/sl-allowance-action">Approve</Button.Transaction>,
     ],
-    action: "/sl-execute-frame",
+    action: "/sl-execute-frame"
   })
 })
 
-app.transaction("/sl-allowance-action", (c) => {
-  console.log("starting allowance action", c)
-  const { inputText, address } = c
-
+app.transaction('/sl-allowance-action', (c) => {
   return c.contract({
     abi: tokenAbi,
     chainId: `eip155:${baseSepolia.id}`,
-    functionName: "approve",
-    args: [SUPER_LIKE_BASE_SEPOLIA_CONTRACT, parseEther(inputText ?? "0")],
-    to: DEGEN_BASE_SEPOLIA_CONTRACT,
+    functionName: 'approve',
+    args: [
+      SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
+      parseEther("10000")
+    ],
+    to: DEGEN_BASE_SEPOLIA_CONTRACT
   })
+
 })
 
-app.frame("/sl-execute-frame", (c) => {
+app.frame('/sl-like-frame', (c) => {
   return c.res({
     image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
         Now, you can set a comment with EAS or not.
       </div>
     ),
     intents: [
-      <TextInput placeholder="Comment (EAS Attestation)" />,
-      <Button.Transaction target="/sl-execute-action">Tip</Button.Transaction>,
+      <TextInput placeholder="Comment (optional)" />,
+      <Button.Transaction target="/sl-execute-action">$25</Button.Transaction>,
+      <Button.Transaction target="/sl-execute-action">$50</Button.Transaction>,
+      <Button.Transaction target="/sl-execute-action">$100</Button.Transaction>
     ],
-    action: "/sl-thanks",
+    action: "/sl-thanks"
   })
 })
 
-// app.transaction('/sl-execute-action', (c) => {
-//   let address = c.address as Address;
-//   let recipientAddress = "";
-//   let textToAttest = "";
-//   // Send transaction response.
-//   console.log("starting superlike", c);
-//   return c.contract({
-//     abi: superLikeAbi,
-//     chainId: `eip155:${base.id}`,
-//     functionName: 'execute',
-//     args: [
-//       recipientAddress,
-//       textToAttest,
-//       DEGEN_BASE_SEPOLIA_CONTRACT,
-//       parseEther('0.0001')
-//     ],
-//     to: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
-//     value: parseEther('0.0001'),
-//   })
-// })
+app.transaction('/sl-execute-action', async (c) => {
 
-app.frame("/thanks", (c) => {
+  const { inputText, buttonIndex, frameData } = c;
+  const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
+  let recipientAddress = await client.fetchBulkUsers([Number(frameData?.castId.fid)]).then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address);
+  let amount = 0;
+  switch (buttonIndex) {
+    case 1:
+      amount = 25;
+      break;
+    case 2:
+      amount = 50;
+      break;
+    case 3:
+      amount = 100;
+      break;
+    default:
+      amount = 0;
+      break;
+  }
+  const taxAmount = await publicClient.readContract({
+    address: SUPER_LIKE_BASE_SEPOLIA_CONTRACT,
+    abi: superLikeAbi,
+    functionName: 'calcTax',
+    args: [DEGEN_BASE_SEPOLIA_CONTRACT]
+  })
+
+  const schemaEncoder = new SchemaEncoder(
+    "address cast_hash, string comment, uint256 to_fid, uint256 from_fid, uint256 tax_amount, uint256 tip_amount, address currency"
+  )
+  const encodedData = schemaEncoder.encodeData([
+    {
+      name: "cast_hash",
+      value: frameData?.castId.hash,
+      type: "address",
+    },
+    {
+      name: "comment",
+      value: inputText,
+      type: "string",
+    },
+    {
+      name: "to_fid",
+      value: frameData?.castId.fid,
+      type: "uint256",
+    },
+    {
+      name: "from_fid",
+      value: frameData?.fid,
+      type: "uint256",
+    },
+    {
+      name: "tax_amount",
+      value: taxAmount as any,
+      type: "uint256",
+    },
+    {
+      name: "tip_amount",
+      value: parseEther(amount.toString()),
+      type: "uint256",
+    },
+    {
+      name: "currency",
+      value: DEGEN_BASE_SEPOLIA_CONTRACT,
+      type: "address",
+    },
+  ])
+  return c.contract({
+    abi: superLikeAbi,
+    chainId: `eip155:${baseSepolia.id}`,
+    functionName: 'execute',
+    args: [
+      recipientAddress,
+      encodedData as `0x${string}`,
+      DEGEN_BASE_SEPOLIA_CONTRACT,
+      parseEther(amount.toString())
+    ],
+    to: SUPER_LIKE_BASE_SEPOLIA_CONTRACT
+  })
+})
+
+app.frame('/thanks', (c) => {
   return c.res({
     image: (
-      <div style={{ color: "white", display: "flex", fontSize: 60 }}>
+      <div style={{ color: 'white', display: 'flex', fontSize: 60 }}>
         Thanks for tip with "SuperLike Degen!"
       </div>
-    ),
+    )
   })
 })
 
-app.route("/data", dataApiApp)
+devtools(app, { serveStatic });
 
-devtools(app, { serveStatic })
-
-export const GET = handle(app)
-export const POST = handle(app)
+export const GET = handle(app);
+export const POST = handle(app);
