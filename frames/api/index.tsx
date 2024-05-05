@@ -218,8 +218,7 @@ app.frame("/done", async (c) => {
 
   await client.publishCast(
     NEYNAR_SIGNER_KEY,
-    `Super Like from @${username}!\n${
-      comment && `${comment}\n\n`
+    `Super Like from @${username}!\n${comment && `${comment}\n\n`
     }${amount} $DEGEN transfered`,
     {
       replyTo: c.frameData?.castId.hash,
@@ -228,7 +227,7 @@ app.frame("/done", async (c) => {
   )
 
   return c.res({
-    image: `${BASE_URL}/frame_0.jpg`,
+    image: `${BASE_URL}/frame_3.jpg`,
   })
 })
 
