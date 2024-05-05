@@ -193,7 +193,7 @@ app.transaction("/like-action", async (c) => {
 
 app.frame("/done", async (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_03.jpg`,
+    image: `${BASE_URL}/frame_03.jpg`
   })
 })
 
