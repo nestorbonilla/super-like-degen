@@ -38,7 +38,7 @@ const ADD_URL_TEST =
 export const app = new Frog({
   apiKey: process.env.AIRSTACK_API_KEY as string,
   basePath: "/api",
-  browserLocation: ADD_URL_PROD,
+  browserLocation: ADD_URL_TEST,
 })
 
 export const publicClient = createPublicClient({
