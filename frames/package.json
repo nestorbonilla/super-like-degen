@@ -12,6 +12,7 @@
     "@airstack/frog": "^0.0.12",
     "@apollo/client": "^3.10.2",
     "@ethereum-attestation-service/eas-sdk": "^2.1.4",
+    "@neynar/nodejs-sdk": "^1.21.2",
     "@vercel/kv": "^1.0.1",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",
