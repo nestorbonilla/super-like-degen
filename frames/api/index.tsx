@@ -72,18 +72,18 @@ app.castAction(
 app.frame('/sl-allowance-frame', (c) => {
   let { frameData, verified } = c;
   console.log("sl-allowance-frame data: ", c);
-  let likerAddress = frameData?.address as Address;
+  // let likerAddress = frameData?.address as Address;
 
-  // const maxAllowance = 2 ** 256 - 1;
-  console.log("before read contract");
+  // // const maxAllowance = 2 ** 256 - 1;
+  // console.log("before read contract");
 
-  const data = publicClient.readContract({
-    address: DEGEN_BASE_SEPOLIA_CONTRACT,
-    abi: degenAbi,
-    functionName: 'allowance',
-    args: [likerAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
-  })
-  console.log("allowance data: ", data);
+  // const data = publicClient.readContract({
+  //   address: DEGEN_BASE_SEPOLIA_CONTRACT,
+  //   abi: degenAbi,
+  //   functionName: 'allowance',
+  //   args: [likerAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
+  // })
+  // console.log("allowance data: ", data);
   // let { inputText = "" } = frameData || {};
   return c.res({
     image: (
