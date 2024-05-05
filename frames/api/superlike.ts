@@ -89,7 +89,7 @@ export const getAttestations = async (params?: { handles: string[] }) => {
   return data.attestations
 }
 
-export const getDecodedAttestations = async () => {
+export const getParsedAttestations = async () => {
   const data = await getAttestations()
 
   const decodedData = data.map((attestation: any) => {

@@ -1,14 +1,10 @@
 import { Frog } from "@airstack/frog"
 import {
-  DecodedSchema,
-  decodeSchemaData,
   getAttestations,
-  getDecodedAttestations,
   getGiveData,
+  getParsedAttestations,
   getReceiveData,
   getTaxData,
-  ParsedSchema,
-  parseSchemaData,
 } from "./superlike.js"
 import { getGrobalEngagementRank } from "../lib/openrank.js"
 
@@ -18,7 +14,7 @@ export const dataApiApp = new Frog({
 })
 
 dataApiApp.hono.get("/", async (c) => {
-  const data = await getDecodedAttestations()
+  const data = await getParsedAttestations()
 
   return c.json(data)
 })
