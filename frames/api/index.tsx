@@ -25,7 +25,7 @@ const ADD_URL_PROD =
 // SEPOLIA
 const DEGEN_BASE_SEPOLIA_CONTRACT = "0x6Df63D498E27B860a58a441D8AA7ea54338830F8"
 const SUPER_LIKE_BASE_SEPOLIA_CONTRACT =
-  "0x84Ec3C369d8d327c6B37AF11C1c4BD6007f91a96"
+  "0x7cc8f63a701F2e3A367a6033406Fc46Ca437eda7"
 const ADD_URL_TEST =
   "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fcead-2607-fb91-3ac-d81e-7c79-32e-fb6f-286d.ngrok-free.app%2Fapi%2Fsuperlike"
 
