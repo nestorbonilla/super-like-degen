@@ -21,7 +21,7 @@ import { NeynarAPIClient, FeedType, FilterType } from "@neynar/nodejs-sdk";
 config();
 
 const ADD_URL =
-  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2Fdegenway.vercel.app%2Fapi%2Fsuperlike";
+  "https://warpcast.com/~/add-cast-action?actionType=post&name=SuperLike&icon=flame&postUrl=https%3A%2F%2F477f-172-90-234-126.ngrok-free.app%2Fapi%2Fsuperlike";
 
 // MAINNET
 const DEGEN_BASE_MAINNET_CONTRACT = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed";
@@ -75,11 +75,6 @@ app.castAction(
       args: [userAddress, SUPER_LIKE_BASE_SEPOLIA_CONTRACT]
     });
     console.log("queryResult: ", queryResult);
-
-    // console.log(
-    //   `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
-    //   } and data: ${JSON.stringify(c)}`,
-    // )
 
     return c.frame({ path: '/sl-allowance-frame' })
   },
