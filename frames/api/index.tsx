@@ -72,7 +72,7 @@ app.castAction(
 
 app.frame("/allowance-frame", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.jpg`,
+    image: `${BASE_URL}/frame_1.jpg`,
     intents: [
       <Button.Transaction target="/allowance-action">
         Approve
@@ -94,7 +94,7 @@ app.transaction("/allowance-action", (c) => {
 
 app.frame("/like-frame", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.jpg`,
+    image: `${BASE_URL}/frame_2.jpg`,
     intents: [
       <TextInput placeholder="Comment (optional)" />,
       <Button.Transaction target="/like-action">10 $DEGEN</Button.Transaction>,
