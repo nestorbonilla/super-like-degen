@@ -1,4 +1,6 @@
 export const AIRSTACK_API_KEY = process.env.AIRSTACK_API_KEY!
+export const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY!
+export const NEYNAR_SIGNER_KEY = process.env.NEYNAR_SIGNER_KEY!
 export const ADD_URL = process.env.ADD_URL!
 export const DEGEN_CONTRACT = process.env.DEGEN_CONTRACT! as `0x${string}`
 export const SUPER_LIKE_CONTRACT = process.env
