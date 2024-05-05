@@ -71,7 +71,7 @@ app.castAction(
         console.error('Error al obtener los datos del usuario:', error);
         throw error; // Re-lanza el error para que sea manejado más arriba si es necesario
       });
-    console.log("likerAddress: ", userData);
+    console.log("likerAddressToRead: ", userData);
     console.log("superlike action ended");
 
     // const data = publicClient.readContract({
