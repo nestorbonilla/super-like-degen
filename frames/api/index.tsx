@@ -18,7 +18,9 @@ import { tokenAbi } from "../abi/erc20.js"
 import { superLikeAbi } from "../abi/superLike.js"
 import { NeynarAPIClient } from "@neynar/nodejs-sdk"
 import { SchemaEncoder } from "@ethereum-attestation-service/eas-sdk"
-import { dataApiApp } from "./dataapi.js"
+import { createSystem } from "@airstack/frog/ui"
+
+const { Image } = createSystem()
 
 config()
 
