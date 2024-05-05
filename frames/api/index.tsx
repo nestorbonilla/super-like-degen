@@ -45,7 +45,7 @@ export const publicClient = createPublicClient({
 
 app.frame("/", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.png`,
+    image: `${BASE_URL}/frame_0.jpg`,
     intents: [
       <Button.AddCastAction action="/superlike">Add</Button.AddCastAction>,
     ],
@@ -79,7 +79,7 @@ app.castAction(
 
 app.frame("/allowance-frame", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.png`,
+    image: `${BASE_URL}/frame_0.jpg`,
     intents: [
       <Button.Transaction target="/allowance-action">
         Approve
@@ -101,7 +101,7 @@ app.transaction("/allowance-action", (c) => {
 
 app.frame("/like-frame", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.png`,
+    image: `${BASE_URL}/frame_0.jpg`,
     intents: [
       <TextInput placeholder="Comment (optional)" />,
       <Button.Transaction target="/like-action">25 $DEGEN</Button.Transaction>,
@@ -196,7 +196,7 @@ app.transaction("/like-action", async (c) => {
 
 app.frame("/done", (c) => {
   return c.res({
-    image: `${BASE_URL}/frame_0.png`,
+    image: `${BASE_URL}/frame_0.jpg`,
   })
 })
 
