@@ -66,8 +66,8 @@ app.castAction(
     // let likerAddress = client.fetchBulkUsers([c.actionData.fid]).then((res) =>  res.users[0].verified_addresses.eth_addresses[0] as Address);
     let userPromise = client.fetchBulkUsers([c.actionData.fid]);
     let userData = userPromise.then((userPromiseData: any) => {
-      console.log('likerAddress:', userPromiseData);
-
+      console.log('new likerAddress:', userPromiseData);
+      console.log('new2 likerAddress:', userPromiseData.users[0].verified_addresses.eth_addresses[0]);
     });
     // console.log("likerAddress: ", likerAddress);
     console.log("superlike action ended");
