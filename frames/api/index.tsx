@@ -115,6 +115,9 @@ app.frame("/like-frame", (c) => {
 app.transaction("/like-action", async (c) => {
   const { inputText, buttonIndex, frameData } = c
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!)
+  let userAddress = await client
+    .fetchBulkUsers([Number(c.frameData?.fid)])
+    .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
   let recipientAddress = await client
     .fetchBulkUsers([Number(frameData?.castId.fid)])
     .then((res) => res.users[0].verified_addresses.eth_addresses[0] as Address)
@@ -138,6 +141,7 @@ app.transaction("/like-action", async (c) => {
     abi: superLikeAbi,
     functionName: "calcTax",
     args: [DEGEN_BASE_SEPOLIA_CONTRACT],
+    account: userAddress as Address,
   })
 
   const schemaEncoder = new SchemaEncoder(

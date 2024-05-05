@@ -47,7 +47,12 @@ contract FarcasterSuperLike is Context {
             timeCounter.times++;
         }
 
-        uint256 tax = _calcTax(currency);
+        uint256 taxUnit = _taxUnit(currency);
+        uint256 tax = taxUnit;
+        
+        if (timeCounter.expirationTime > block.timestamp) {
+            tax = (timeCounter.times ^ 2) * taxUnit;
+        }
 
         if (currency == address(0)) {
             require(msg.value == amount + tax, "Forwarder: not enough");
@@ -79,11 +84,7 @@ contract FarcasterSuperLike is Context {
     }
 
     function calcTax(address currency) view external returns (uint256) {
-        return _calcTax(currency);
-    }
-
-    function _calcTax(address currency) view internal returns (uint256) {
-        TimeCount storage timeCounter = timesCounter[_msgSender()];
+        TimeCount memory timeCounter = timesCounter[_msgSender()];
         uint256 taxUnit = _taxUnit(currency);
         uint256 tax = taxUnit;
 
