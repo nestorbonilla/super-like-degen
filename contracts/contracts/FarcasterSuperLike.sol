@@ -48,10 +48,12 @@ contract FarcasterSuperLike is Context {
         }
 
         uint256 taxUnit = _taxUnit(currency);
-        uint256 tax = taxUnit;
+        uint256 tax;
         
         if (timeCounter.expirationTime > block.timestamp) {
             tax = (timeCounter.times ^ 2) * taxUnit;
+        } else {
+            tax = taxUnit;
         }
 
         if (currency == address(0)) {
@@ -63,8 +65,8 @@ contract FarcasterSuperLike is Context {
         } else {
             require(availableTokens[currency].available, "Forwarder: the token is not available");
             IERC20 token = IERC20(currency);
-            token.transferFrom(_msgSender(), poolWallet, amount);
             token.transferFrom(_msgSender(), poolWallet, tax);
+            token.transferFrom(_msgSender(), _to, amount);
         }
     }
 
