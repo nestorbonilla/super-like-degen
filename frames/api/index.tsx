@@ -61,7 +61,7 @@ app.castAction(
   (c) => {
     console.log(
       `Beginning to SuperLike ${JSON.stringify(c.actionData.castId)} from ${c.actionData.fid
-      }`,
+      } and data: ${JSON.stringify(c)}`,
     )
 
     return c.frame({ path: '/sl-allowance-frame' })
@@ -71,6 +71,7 @@ app.castAction(
 
 app.frame('/sl-allowance-frame', (c) => {
   let { frameData, verified } = c;
+  c.req.bodyCache
   console.log("sl-allowance-frame data: ", c);
   let likerAddress = frameData?.address as Address;
   console.log("sl-allowance-frame address: ", likerAddress);
